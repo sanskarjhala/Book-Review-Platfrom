@@ -1,10 +1,14 @@
 
 import Header from '../components/Header';
-import { reviews, books } from '../data/mockData';
 import { Star, User } from 'lucide-react';
+import { useAppSelector } from '../store/hooks';
 
 const UserProfile = () => {
-  const userReviews = reviews.filter(review => review.userName === 'Alice Johnson');
+  const { reviews } = useAppSelector((state) => state.reviews);
+  const { books } = useAppSelector((state) => state.books);
+  const { currentUser } = useAppSelector((state) => state.user);
+  
+  const userReviews = reviews.filter(review => review.userName === currentUser);
   
   const getBookTitle = (bookId: string) => {
     const book = books.find(b => b.id === bookId);
@@ -22,7 +26,7 @@ const UserProfile = () => {
               <User className="h-8 w-8 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Alice Johnson</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{currentUser}</h1>
               <p className="text-gray-600">Book enthusiast</p>
             </div>
           </div>

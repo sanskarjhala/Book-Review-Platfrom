@@ -1,20 +1,22 @@
 
-import { useState } from 'react';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
-import { books, genres } from '../data/mockData';
+import { genres } from '../data/mockData';
 import { Search } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { setSearchTerm, setSelectedGenre } from '../store/slices/booksSlice';
 
 const BookListing = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('All Genres');
+  const dispatch = useAppDispatch();
+  const { filteredBooks, searchTerm, selectedGenre } = useAppSelector((state) => state.books);
 
-  const filteredBooks = books.filter((book) => {
-    const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         book.author.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGenre = selectedGenre === 'All Genres' || book.genre === selectedGenre;
-    return matchesSearch && matchesGenre;
-  });
+  const handleSearchChange = (value: string) => {
+    dispatch(setSearchTerm(value));
+  };
+
+  const handleGenreChange = (genre: string) => {
+    dispatch(setSelectedGenre(genre));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -31,13 +33,13 @@ const BookListing = () => {
                 type="text"
                 placeholder="Search by title or author..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <select
               value={selectedGenre}
-              onChange={(e) => setSelectedGenre(e.target.value)}
+              onChange={(e) => handleGenreChange(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {genres.map((genre) => (

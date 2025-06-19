@@ -2,9 +2,10 @@
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
-import { books } from '../data/mockData';
+import { useAppSelector } from '../store/hooks';
 
 const Home = () => {
+  const { books } = useAppSelector((state) => state.books);
   const featuredBooks = books.slice(0, 3);
 
   return (

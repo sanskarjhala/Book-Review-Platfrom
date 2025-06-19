@@ -1,16 +1,21 @@
 
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
 import Header from '../components/Header';
 import ReviewForm from '../components/ReviewForm';
-import { books, reviews } from '../data/mockData';
 import { Star } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { addReview } from '../store/slices/reviewsSlice';
+import { updateBookRating } from '../store/slices/booksSlice';
 
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [bookReviews, setBookReviews] = useState(reviews.filter(review => review.bookId === id));
+  const dispatch = useAppDispatch();
+  const { books } = useAppSelector((state) => state.books);
+  const { reviews } = useAppSelector((state) => state.reviews);
+  const { currentUser } = useAppSelector((state) => state.user);
   
   const book = books.find(b => b.id === id);
+  const bookReviews = reviews.filter(review => review.bookId === id);
 
   if (!book) {
     return (
@@ -27,12 +32,22 @@ const BookDetail = () => {
     const newReview = {
       id: Date.now().toString(),
       bookId: book.id,
-      userName: 'Current User',
+      userName: currentUser,
       rating: review.rating,
       comment: review.comment,
       date: new Date().toISOString().split('T')[0]
     };
-    setBookReviews([newReview, ...bookReviews]);
+    
+    dispatch(addReview(newReview));
+    
+    // Update book rating
+    const allBookReviews = [...bookReviews, newReview];
+    const newRating = allBookReviews.reduce((sum, r) => sum + r.rating, 0) / allBookReviews.length;
+    dispatch(updateBookRating({
+      bookId: book.id,
+      rating: newRating,
+      reviewCount: allBookReviews.length
+    }));
   };
 
   return (
