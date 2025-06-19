@@ -1,6 +1,6 @@
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { books } from '../../data/mockData';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import api from '../../services/api';
 
 interface Book {
   id: string;
@@ -16,16 +16,56 @@ interface Book {
 interface BooksState {
   books: Book[];
   filteredBooks: Book[];
+  currentBook: Book | null;
+  loading: boolean;
+  error: string | null;
   searchTerm: string;
   selectedGenre: string;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+  };
 }
 
 const initialState: BooksState = {
-  books: books,
-  filteredBooks: books,
+  books: [],
+  filteredBooks: [],
+  currentBook: null,
+  loading: false,
+  error: null,
   searchTerm: '',
   selectedGenre: 'All Genres',
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+  },
 };
+
+export const fetchBooks = createAsyncThunk(
+  'books/fetchBooks',
+  async ({ page = 1, limit = 10 }: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/books?page=${page}&limit=${limit}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch books');
+    }
+  }
+);
+
+export const fetchBookById = createAsyncThunk(
+  'books/fetchBookById',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/books/${id}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch book');
+    }
+  }
+);
 
 const booksSlice = createSlice({
   name: 'books',
@@ -49,15 +89,44 @@ const booksSlice = createSlice({
         return matchesSearch && matchesGenre;
       });
     },
-    updateBookRating: (state, action: PayloadAction<{ bookId: string; rating: number; reviewCount: number }>) => {
-      const book = state.books.find(b => b.id === action.payload.bookId);
-      if (book) {
-        book.rating = action.payload.rating;
-        book.reviewCount = action.payload.reviewCount;
-      }
+    clearError: (state) => {
+      state.error = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchBooks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBooks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.books = action.payload.books || action.payload;
+        state.filteredBooks = action.payload.books || action.payload;
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 10,
+          total: action.payload.total || action.payload.length,
+        };
+      })
+      .addCase(fetchBooks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchBookById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBookById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentBook = action.payload;
+      })
+      .addCase(fetchBookById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
-export const { setSearchTerm, setSelectedGenre, updateBookRating } = booksSlice.actions;
+export const { setSearchTerm, setSelectedGenre, clearError } = booksSlice.actions;
 export default booksSlice.reducer;

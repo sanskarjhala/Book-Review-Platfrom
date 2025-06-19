@@ -1,14 +1,20 @@
 
+import { useEffect } from 'react';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
-import { genres } from '../data/mockData';
 import { Search } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { setSearchTerm, setSelectedGenre } from '../store/slices/booksSlice';
+import { fetchBooks, setSearchTerm, setSelectedGenre } from '../store/slices/booksSlice';
+
+const genres = ['All Genres', 'Fiction', 'Non-Fiction', 'Mystery', 'Romance', 'Sci-Fi', 'Fantasy'];
 
 const BookListing = () => {
   const dispatch = useAppDispatch();
-  const { filteredBooks, searchTerm, selectedGenre } = useAppSelector((state) => state.books);
+  const { filteredBooks, searchTerm, selectedGenre, loading, error } = useAppSelector((state) => state.books);
+
+  useEffect(() => {
+    dispatch(fetchBooks());
+  }, [dispatch]);
 
   const handleSearchChange = (value: string) => {
     dispatch(setSearchTerm(value));
@@ -17,6 +23,28 @@ const BookListing = () => {
   const handleGenreChange = (genre: string) => {
     dispatch(setSelectedGenre(genre));
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">Loading books...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-red-600">Error: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

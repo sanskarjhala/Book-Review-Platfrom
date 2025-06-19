@@ -1,19 +1,54 @@
 
+import { useEffect } from 'react';
 import Header from '../components/Header';
 import { Star, User } from 'lucide-react';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { fetchUserProfile } from '../store/slices/userSlice';
+import { fetchReviews } from '../store/slices/reviewsSlice';
 
 const UserProfile = () => {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+  const { profile, loading: profileLoading, error: profileError } = useAppSelector((state) => state.user);
   const { reviews } = useAppSelector((state) => state.reviews);
   const { books } = useAppSelector((state) => state.books);
-  const { currentUser } = useAppSelector((state) => state.user);
   
-  const userReviews = reviews.filter(review => review.userName === currentUser);
+  const userReviews = reviews.filter(review => review.userId === user?.id);
   
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchUserProfile(user.id));
+    }
+  }, [dispatch, user?.id]);
+
   const getBookTitle = (bookId: string) => {
     const book = books.find(b => b.id === bookId);
     return book?.title || 'Unknown Book';
   };
+
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">Loading profile...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-red-600">Error: {profileError}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentUser = profile || user;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -26,8 +61,10 @@ const UserProfile = () => {
               <User className="h-8 w-8 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{currentUser}</h1>
-              <p className="text-gray-600">Book enthusiast</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {currentUser?.username || 'User'}
+              </h1>
+              <p className="text-gray-600">{currentUser?.email}</p>
             </div>
           </div>
           
@@ -43,8 +80,10 @@ const UserProfile = () => {
               <div className="text-sm text-gray-600">Average Rating</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-2xl font-bold text-blue-600">15</div>
-              <div className="text-sm text-gray-600">Books Read</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {new Set(userReviews.map(r => r.bookId)).size}
+              </div>
+              <div className="text-sm text-gray-600">Books Reviewed</div>
             </div>
           </div>
         </div>
@@ -63,7 +102,9 @@ const UserProfile = () => {
                   </div>
                 </div>
                 <p className="text-gray-700 mb-2">{review.comment}</p>
-                <p className="text-sm text-gray-500">Reviewed on {review.date}</p>
+                <p className="text-sm text-gray-500">
+                  Reviewed on {new Date(review.createdAt).toLocaleDateString()}
+                </p>
               </div>
             ))}
             

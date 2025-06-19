@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { Star } from 'lucide-react';
+import { useAppSelector } from '../store/hooks';
 
 interface ReviewFormProps {
   onSubmit: (review: { rating: number; comment: string }) => void;
@@ -10,6 +11,7 @@ const ReviewForm = ({ onSubmit }: ReviewFormProps) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
+  const { loading } = useAppSelector((state) => state.reviews);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,10 +63,10 @@ const ReviewForm = ({ onSubmit }: ReviewFormProps) => {
 
       <button
         type="submit"
-        disabled={rating === 0 || !comment.trim()}
+        disabled={rating === 0 || !comment.trim() || loading}
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
       >
-        Submit Review
+        {loading ? 'Submitting...' : 'Submit Review'}
       </button>
     </form>
   );
