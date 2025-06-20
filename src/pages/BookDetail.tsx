@@ -123,8 +123,8 @@ const BookDetail = () => {
               
               {reviews.length === 0 && !reviewsLoading && (
                 <p className="text-gray-500 text-center py-8">No reviews yet. Be the first to write one!</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </main>
