@@ -12,7 +12,7 @@ const Home = () => {
   const featuredBooks = books.slice(0, 3);
 
   useEffect(() => {
-    dispatch(fetchBooks({ limit: 6 }));
+    dispatch(fetchBooks());
   }, [dispatch]);
 
   return (

@@ -1,6 +1,6 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../services/api';
+import { reviewApi } from '../../api/reviewApi';
 
 interface Review {
   id: string;
@@ -24,38 +24,18 @@ const initialState: ReviewsState = {
   error: null,
 };
 
-export const fetchReviews = createAsyncThunk(
-  'reviews/fetchReviews',
-  async (bookId: string, { rejectWithValue }) => {
-    try {
-      const response = await api.get(`/reviews?bookId=${bookId}`);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch reviews');
-    }
-  }
-);
+export const fetchReviews = createAsyncThunk('reviews/fetchReviews', async (bookId: string) => {
+  return await reviewApi.getReviewsByBook(bookId);
+});
 
-export const submitReview = createAsyncThunk(
-  'reviews/submitReview',
-  async (reviewData: { userId: string; bookId: string; rating: number; comment: string }, { rejectWithValue }) => {
-    try {
-      const response = await api.post('/reviews', reviewData);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to submit review');
-    }
-  }
-);
+export const submitReview = createAsyncThunk('reviews/submitReview', async (reviewData: { userId: string; bookId: string; rating: number; comment: string }) => {
+  return await reviewApi.submitReview(reviewData);
+});
 
 const reviewsSlice = createSlice({
   name: 'reviews',
   initialState,
-  reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchReviews.pending, (state) => {
@@ -68,7 +48,7 @@ const reviewsSlice = createSlice({
       })
       .addCase(fetchReviews.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.error.message || 'Failed to fetch reviews';
       })
       .addCase(submitReview.pending, (state) => {
         state.loading = true;
@@ -80,10 +60,9 @@ const reviewsSlice = createSlice({
       })
       .addCase(submitReview.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.error.message || 'Failed to submit review';
       });
   },
 });
 
-export const { clearError } = reviewsSlice.actions;
 export default reviewsSlice.reducer;
