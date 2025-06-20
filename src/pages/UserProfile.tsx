@@ -1,10 +1,11 @@
 
 import { useEffect } from 'react';
 import Header from '../components/Header';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { Star, User } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchUserProfile } from '../store/slices/userSlice';
-import { fetchReviews } from '../store/slices/reviewsSlice';
 
 const UserProfile = () => {
   const dispatch = useAppDispatch();
@@ -31,7 +32,7 @@ const UserProfile = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading profile...</div>
+          <LoadingSpinner message="Loading profile..." />
         </div>
       </div>
     );
@@ -42,7 +43,7 @@ const UserProfile = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-red-600">Error: {profileError}</div>
+          <ErrorMessage message={profileError} />
         </div>
       </div>
     );

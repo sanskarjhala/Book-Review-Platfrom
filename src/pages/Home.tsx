@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchBooks } from '../store/slices/booksSlice';
 
@@ -38,8 +40,8 @@ const Home = () => {
         <section>
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Books</h2>
           
-          {loading && <div className="text-center">Loading books...</div>}
-          {error && <div className="text-center text-red-600">Error: {error}</div>}
+          {loading && <LoadingSpinner message="Loading books..." />}
+          {error && <ErrorMessage message={error} />}
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredBooks.map((book) => (

@@ -2,7 +2,8 @@
 import { useEffect } from 'react';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
-import { Search } from 'lucide-react';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchBooks } from '../store/slices/booksSlice';
 
@@ -19,7 +20,7 @@ const BookListing = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading books...</div>
+          <LoadingSpinner message="Loading books..." />
         </div>
       </div>
     );
@@ -30,7 +31,7 @@ const BookListing = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-red-600">Error: {error}</div>
+          <ErrorMessage message={error} />
         </div>
       </div>
     );

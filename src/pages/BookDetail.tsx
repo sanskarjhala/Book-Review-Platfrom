@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import ReviewForm from '../components/ReviewForm';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { Star } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchBookById } from '../store/slices/booksSlice';
@@ -38,7 +40,7 @@ const BookDetail = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading book details...</div>
+          <LoadingSpinner message="Loading book details..." />
         </div>
       </div>
     );
@@ -49,9 +51,7 @@ const BookDetail = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-center text-red-600">
-            {bookError || 'Book not found.'}
-          </p>
+          <ErrorMessage message={bookError || 'Book not found.'} />
         </div>
       </div>
     );
@@ -103,8 +103,8 @@ const BookDetail = () => {
           <div className={isAuthenticated ? '' : 'lg:col-span-2'}>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Reviews</h2>
             
-            {reviewsLoading && <div className="text-center">Loading reviews...</div>}
-            {reviewsError && <div className="text-center text-red-600">Error: {reviewsError}</div>}
+            {reviewsLoading && <LoadingSpinner message="Loading reviews..." />}
+            {reviewsError && <ErrorMessage message={reviewsError} />}
             
             <div className="space-y-6">
               {reviews.map((review) => (
@@ -123,8 +123,8 @@ const BookDetail = () => {
               
               {reviews.length === 0 && !reviewsLoading && (
                 <p className="text-gray-500 text-center py-8">No reviews yet. Be the first to write one!</p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
