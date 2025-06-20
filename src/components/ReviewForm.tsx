@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 import { Star } from 'lucide-react';
-import { useAppSelector } from '../store/hooks';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
 
 interface ReviewFormProps {
   onSubmit: (review: { rating: number; comment: string }) => void;
@@ -11,7 +11,7 @@ const ReviewForm = ({ onSubmit }: ReviewFormProps) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
-  const { loading } = useAppSelector((state) => state.reviews);
+  const { loading } = useSelector((state: RootState) => state.reviews);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
