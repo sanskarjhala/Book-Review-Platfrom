@@ -1,18 +1,18 @@
-
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { Star, User } from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchUserProfile } from '../store/slices/userSlice';
+import type { RootState, AppDispatch } from '../store/store';
 
 const UserProfile = () => {
-  const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
-  const { profile, loading: profileLoading, error: profileError } = useAppSelector((state) => state.user);
-  const { reviews } = useAppSelector((state) => state.reviews);
-  const { books } = useAppSelector((state) => state.books);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { profile, loading: profileLoading, error: profileError } = useSelector((state: RootState) => state.user);
+  const { reviews } = useSelector((state: RootState) => state.reviews);
+  const { books } = useSelector((state: RootState) => state.books);
   
   const userReviews = reviews.filter(review => review.userId === user?.id);
   

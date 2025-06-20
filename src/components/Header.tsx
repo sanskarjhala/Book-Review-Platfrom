@@ -1,12 +1,12 @@
-
 import { Link } from 'react-router-dom';
 import { Book, User, Search, LogOut } from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
+import type { RootState } from '../store/store';
 
 const Header = () => {
-  const dispatch = useAppDispatch();
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());

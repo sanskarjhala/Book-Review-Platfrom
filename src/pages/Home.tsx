@@ -1,16 +1,16 @@
-
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
-import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchBooks } from '../store/slices/booksSlice';
+import type { RootState, AppDispatch } from '../store/store';
 
 const Home = () => {
-  const dispatch = useAppDispatch();
-  const { books, loading, error } = useAppSelector((state) => state.books);
+  const dispatch = useDispatch<AppDispatch>();
+  const { books, loading, error } = useSelector((state: RootState) => state.books);
   const featuredBooks = books.slice(0, 3);
 
   useEffect(() => {

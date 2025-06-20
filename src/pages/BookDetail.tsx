@@ -1,21 +1,21 @@
-
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import ReviewForm from '../components/ReviewForm';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { Star } from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { fetchBookById } from '../store/slices/booksSlice';
 import { fetchReviews, submitReview } from '../store/slices/reviewsSlice';
+import type { RootState, AppDispatch } from '../store/store';
 
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useAppDispatch();
-  const { currentBook, loading: bookLoading, error: bookError } = useAppSelector((state) => state.books);
-  const { reviews, loading: reviewsLoading, error: reviewsError } = useAppSelector((state) => state.reviews);
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const { currentBook, loading: bookLoading, error: bookError } = useSelector((state: RootState) => state.books);
+  const { reviews, loading: reviewsLoading, error: reviewsError } = useSelector((state: RootState) => state.reviews);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (id) {
