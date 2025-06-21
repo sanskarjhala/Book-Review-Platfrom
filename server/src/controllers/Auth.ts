@@ -3,7 +3,7 @@ import prisma from "../utils/prisma";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/jwt";
 
-exports.register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   const { email, password, username } = req.body;
 
   if (!email || !password || !username) {
@@ -40,7 +40,7 @@ exports.register = async (req: Request, res: Response) => {
 
   const token = generateToken({ id: user.id, email: user.email });
 
-  res.status(201).json({
+  return res.status(201).json({
     user: {
       id: user.id,
       email: user.email,
@@ -50,7 +50,7 @@ exports.register = async (req: Request, res: Response) => {
   });
 };
 
-exports.login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -63,9 +63,9 @@ exports.login = async (req: Request, res: Response) => {
     return res.status(401).json({ error: "Invalid Credentials" });
   }
 
-  const token = generateToken({ id: user.id, email: user.id });
+  const token = generateToken({ id: user.id, email: user.email });
 
-  res.status(201).json({
+  return res.status(201).json({
     user: {
       id: user.id,
       email: user.id,

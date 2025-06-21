@@ -1,18 +1,18 @@
 import  express  from "express";
-
+import dotenv from "dotenv"
+dotenv.config();
+import authRoutes from "./routes/auth.routes"
+// import bookRoutes from "./routes/book.routes"
 
 const app = express();
-const port = process.env.PORT;
+app.use(express.json())
+app.use("/auth" , authRoutes)
+// app.use("/book" , bookRoutes)
+
+
+
+const port = process.env.PORT || 3000;
 
 app.listen(port , () => {
     console.log(`server is running at port number ${port}`)
 })
-
-// import prisma from "./utils/prisma";
-
-// async function test() {
-//   const users = await prisma.user.findMany();
-//   console.log(users);
-// }
-
-// test();
