@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../utils/jwt";
 
-exports.authMiddleware = async (
+export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -9,9 +9,10 @@ exports.authMiddleware = async (
   const authheader = req.headers.authorization;
 
   if (!authheader?.startsWith("Bearer ")) {
-    return res.status(401).json({
+     res.status(401).json({
       error: "Token is missing",
     });
+    return;
   }
 
   const token = authheader.split(" ")[1];
@@ -21,8 +22,9 @@ exports.authMiddleware = async (
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(403).json({
+     res.status(403).json({
       error: " unauthorized",
     });
+    return
   }
 };

@@ -36,13 +36,14 @@ export const createReview = async (req: Request, res: Response) => {
   const { bookId, rating, comment } = req.body;
 
   if (!bookId || !comment || !rating) {
-    return res.status(400).json({ error: "Missing fields" });
+    res.status(400).json({ error: "Missing fields" });
+    return;
   }
 
-  if (comment.length < 10 || comment.length > 1000)
-    return res
-      .status(400)
-      .json({ error: "Comment must be 10-1000 characters" });
+  if (comment.length < 10 || comment.length > 1000) {
+    res.status(400).json({ error: "Comment must be 10-1000 characters" });
+    return;
+  }
 
   const existing = await prisma.review.findUnique({
     where: {
@@ -53,10 +54,10 @@ export const createReview = async (req: Request, res: Response) => {
     },
   });
 
-  if (existing)
-    return res
-      .status(409)
-      .json({ error: "You have already reviewed this book" });
+  if (existing) {
+    res.status(409).json({ error: "You have already reviewed this book" });
+    return;
+  }
 
   const review = await prisma.review.create({
     data: {
@@ -83,6 +84,6 @@ export const createReview = async (req: Request, res: Response) => {
     },
   });
 
-    res.status(201).json({ ...review, userName: user.username });
-    return;XMLDocument
+  res.status(201).json({ ...review, userName: user.username });
+  return;
 };
