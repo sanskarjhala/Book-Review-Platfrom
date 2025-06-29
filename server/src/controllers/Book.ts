@@ -25,7 +25,7 @@ export const getBooks = async (req: Request, res: Response) => {
     reviewCount: book.reviews.length,
   }));
 
-  return res.json({
+  res.json({
     books: formattedBooks,
     pagination: {
       page,
@@ -34,6 +34,7 @@ export const getBooks = async (req: Request, res: Response) => {
       totalPages: Math.ceil(total / limit),
     },
   });
+  return;
 };
 
 export const getBookByid = async (req: Request, res: Response) => {
@@ -44,12 +45,16 @@ export const getBookByid = async (req: Request, res: Response) => {
     include: { reviews: true },
   });
 
-  if (!book) return res.status(404).json({ error: "Boook not found" });
+  if (!book) {
+    res.status(404).json({ error: "Boook not found" });
+    return;
+  }
 
-  return res.json({
+  res.json({
     ...book,
     reviewCount: book.reviews.length,
   });
+  return;
 };
 
 const bookSchema = z.object({
@@ -62,16 +67,20 @@ const bookSchema = z.object({
 
 //posting books
 export const createBook = async (req: Request, res: Response) => {
-    const parsed = bookSchema.safeParse(req.body);
-    if(!parsed.success) return res.status(400).json({error : parsed.error.errors});
+  const parsed = bookSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.errors });
+    return;
+  }
 
-    const book = await prisma.book.create({
-        data:parsed.data,
-    })
+  const book = await prisma.book.create({
+    data: parsed.data,
+  });
 
-    return res.json({
-        ...book,
-        rating:0,
-        reviewCount: 0
-    })
+  res.status(200).json({
+    ...book,
+    rating: 0,
+    reviewCount: 0,
+  });
+  return;
 };

@@ -7,9 +7,10 @@ export const register = async (req: Request, res: Response) => {
   const { email, password, username } = req.body;
 
   if (!email || !password || !username) {
-    return res.status(400).json({
+    res.status(400).json({
       error: "Miising fileds",
     });
+    return;
   }
 
   const existingUser = await prisma.user.findFirst({
@@ -19,7 +20,8 @@ export const register = async (req: Request, res: Response) => {
   });
 
   if (existingUser?.username === username || existingUser?.email === email) {
-    return res.status(409).json({ error: "user already exists" });
+    res.status(409).json({ error: "user already exists" });
+    return;
   }
 
   const hashed = await bcrypt.hash(password, 10);
@@ -33,14 +35,15 @@ export const register = async (req: Request, res: Response) => {
   });
 
   if (!user || user === undefined) {
-    return res.json({
+    res.json({
       message: "Server error or user not registered",
     });
+    return
   }
 
   const token = generateToken({ id: user.id, email: user.email });
 
-  return res.status(201).json({
+  res.status(201).json({
     user: {
       id: user.id,
       email: user.email,
@@ -48,24 +51,27 @@ export const register = async (req: Request, res: Response) => {
     },
     token,
   });
+  return
 };
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.json({ error: "Missing fields" });
+    res.json({ error: "Missing fields" });
+    return;
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: "Invalid Credentials" });
+    res.status(401).json({ error: "Invalid Credentials" });
+    return;
   }
 
   const token = generateToken({ id: user.id, email: user.email });
 
-  return res.status(201).json({
+  res.status(201).json({
     user: {
       id: user.id,
       email: user.id,
@@ -73,4 +79,5 @@ export const login = async (req: Request, res: Response) => {
     },
     token,
   });
+  return;
 };
