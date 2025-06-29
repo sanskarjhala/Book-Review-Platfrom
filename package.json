@@ -10,9 +10,6 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^6.10.1",

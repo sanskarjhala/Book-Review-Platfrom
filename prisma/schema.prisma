@@ -20,7 +20,7 @@ model User {
   email      String   @unique
   password   String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
   reviews    Review[]
 }
 
@@ -34,7 +34,7 @@ model Book {
   rating       Decimal  @default(0.0) @db.Decimal(2, 1)
   review_count Int      @default(0)
   created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  updated_at   DateTime @updatedAt @default(now())
   reviews      Review[]
 
   @@index([rating(sort: Desc)]) // index on reating in descending order
@@ -45,7 +45,7 @@ model Review {
   rating     Int
   comment    String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 
   //realtion
   userId String
