@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
@@ -10,7 +9,7 @@ import type { RootState, AppDispatch } from '../store/store';
 
 const UserProfile = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const { profile, loading: profileLoading, error: profileError } = useSelector((state: RootState) => state.user);
   const { reviews } = useSelector((state: RootState) => state.reviews);
   const { books } = useSelector((state: RootState) => state.books);
@@ -18,12 +17,10 @@ const UserProfile = () => {
   const userReviews = reviews.filter(review => review.userId === user?.id);
   
   useEffect(() => {
-    // Always fetch profile when component mounts if we have a user
-    if (user?.id && isAuthenticated) {
-      console.log('Fetching user profile for:', user.id);
+    if (user?.id) {
       dispatch(fetchUserProfile(user.id));
     }
-  }, [dispatch, user?.id, isAuthenticated]);
+  }, [dispatch, user?.id]);
 
   const getBookTitle = (bookId: string) => {
     const book = books.find(b => b.id === bookId);
@@ -38,19 +35,8 @@ const UserProfile = () => {
     return (sum / validRatings.length).toFixed(1);
   };
 
-  // Show loading while we don't have user or while profile is loading
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <ErrorMessage message="Please log in to view your profile." />
-        </div>
-      </div>
-    );
-  }
-
-  if (profileLoading) {
+  // Show loading while we're waiting for user data or profile data
+  if (!user || profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
