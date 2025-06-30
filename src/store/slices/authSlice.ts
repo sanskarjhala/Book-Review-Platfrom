@@ -1,11 +1,25 @@
-
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { authApi } from '../../api/authApi';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { authApi } from "../../api/authApi";
+import { jwtDecode } from "jwt-decode"; // <-- FIXED
 
 interface User {
   id: string;
   username: string;
   email: string;
+}
+
+function getUserFromToken(token: string | null): User | null {
+  if (!token) return null;
+  try {
+    const decoded: any = jwtDecode(token);
+    return {
+      id: decoded.id,
+      username: decoded.username,
+      email: decoded.email,
+    };
+  } catch {
+    return null;
+  }
 }
 
 interface AuthState {
@@ -16,35 +30,42 @@ interface AuthState {
   error: string | null;
 }
 
+const token = localStorage.getItem("token");
 const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  user: getUserFromToken(token),
+  token,
+  isAuthenticated: !!token,
   loading: false,
   error: null,
 };
 
-export const login = createAsyncThunk('auth/login', async (credentials: { email: string; password: string }) => {
-  const response = await authApi.login(credentials);
-  localStorage.setItem('token', response.token);
-  return response;
-});
+export const login = createAsyncThunk(
+  "auth/login",
+  async (credentials: { email: string; password: string }) => {
+    const response = await authApi.login(credentials);
+    localStorage.setItem("token", response.token);
+    return response;
+  }
+);
 
-export const register = createAsyncThunk('auth/register', async (userData: { username: string; email: string; password: string }) => {
-  const response = await authApi.register(userData);
-  localStorage.setItem('token', response.token);
-  return response;
-});
+export const register = createAsyncThunk(
+  "auth/register",
+  async (userData: { username: string; email: string; password: string }) => {
+    const response = await authApi.register(userData);
+    localStorage.setItem("token", response.token);
+    return response;
+  }
+);
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
     },
     clearError: (state) => {
       state.error = null;
@@ -64,7 +85,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Login failed';
+        state.error = action.error.message || "Login failed";
       })
       .addCase(register.pending, (state) => {
         state.loading = true;
@@ -78,7 +99,7 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Registration failed';
+        state.error = action.error.message || "Registration failed";
       });
   },
 });
