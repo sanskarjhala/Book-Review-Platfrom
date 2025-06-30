@@ -69,7 +69,7 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  const token = generateToken({ id: user.id, email: user.email });
+  const token = generateToken({ id: user.id, email: user.email , username: user.username });
 
   res.status(201).json({
     user: {
