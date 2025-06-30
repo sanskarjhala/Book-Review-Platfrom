@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
@@ -27,6 +28,14 @@ const UserProfile = () => {
     return book?.title || 'Unknown Book';
   };
 
+  const calculateAverageRating = () => {
+    if (userReviews.length === 0) return '0.0';
+    const validRatings = userReviews.filter(review => typeof review.rating === 'number' && !isNaN(review.rating));
+    if (validRatings.length === 0) return '0.0';
+    const sum = validRatings.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / validRatings.length).toFixed(1);
+  };
+
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -49,7 +58,19 @@ const UserProfile = () => {
     );
   }
 
-  const currentUser = profile || user;
+  // Use profile data if available, otherwise fall back to user data
+  const displayUser = profile || user;
+
+  if (!displayUser) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ErrorMessage message="User not found. Please log in again." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -63,9 +84,9 @@ const UserProfile = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {currentUser?.username || 'User'}
+                {displayUser.username || 'User'}
               </h1>
-              <p className="text-gray-600">{currentUser?.email}</p>
+              <p className="text-gray-600">{displayUser.email}</p>
             </div>
           </div>
           
@@ -76,7 +97,7 @@ const UserProfile = () => {
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-blue-600">
-                {userReviews.length > 0 ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1) : '0'}
+                {calculateAverageRating()}
               </div>
               <div className="text-sm text-gray-600">Average Rating</div>
             </div>
