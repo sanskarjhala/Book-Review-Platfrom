@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
@@ -36,7 +35,8 @@ const UserProfile = () => {
     return (sum / validRatings.length).toFixed(1);
   };
 
-  if (profileLoading) {
+  // Show loading while we're waiting for user data or profile data
+  if (!user || profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -60,17 +60,6 @@ const UserProfile = () => {
 
   // Use profile data if available, otherwise fall back to user data
   const displayUser = profile || user;
-
-  if (!displayUser) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <ErrorMessage message="User not found. Please log in again." />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">

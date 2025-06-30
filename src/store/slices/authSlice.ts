@@ -16,10 +16,23 @@ interface AuthState {
   error: string | null;
 }
 
+// Helper function to decode JWT token
+const decodeToken = (token: string): User | null => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.user || null;
+  } catch {
+    return null;
+  }
+};
+
+const token = localStorage.getItem('token');
+const user = token ? decodeToken(token) : null;
+
 const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  user,
+  token,
+  isAuthenticated: !!token,
   loading: false,
   error: null,
 };
