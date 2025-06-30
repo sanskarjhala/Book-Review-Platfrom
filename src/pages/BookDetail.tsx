@@ -66,29 +66,29 @@ const BookDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
               <img 
-                src={currentBook.cover} 
-                alt={currentBook.title}
+                src={currentBook?.cover} 
+                alt={currentBook?.title}
                 className="w-full max-w-sm mx-auto rounded-lg shadow-md"
               />
             </div>
             
             <div className="md:col-span-2">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{currentBook.title}</h1>
-              <p className="text-xl text-gray-600 mb-4">by {currentBook.author}</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{currentBook?.title}</h1>
+              <p className="text-xl text-gray-600 mb-4">by {currentBook?.author}</p>
               
               <div className="flex items-center space-x-2 mb-4">
                 <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                <span className="text-lg font-semibold">{currentBook.rating.toFixed(1)}</span>
-                <span className="text-gray-500">({currentBook.reviewCount} reviews)</span>
+                <span className="text-lg font-semibold">{currentBook?.rating}</span>
+                <span className="text-gray-500">({currentBook?.reviewCount} reviews)</span>
               </div>
               
               <div className="mb-4">
                 <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                  {currentBook.genre}
+                  {currentBook?.genre}
                 </span>
               </div>
               
-              <p className="text-gray-700 leading-relaxed">{currentBook.description}</p>
+              <p className="text-gray-700 leading-relaxed">{currentBook?.description}</p>
             </div>
           </div>
         </div>
@@ -110,14 +110,14 @@ const BookDetail = () => {
               {reviews.map((review) => (
                 <div key={review.id} className="bg-white rounded-lg shadow-sm p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-900">{review.userName}</h4>
+                    <h4 className="font-semibold text-gray-900">{review?.userName}</h4>
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-700">{review.rating}</span>
+                      <span className="text-sm text-gray-700">{review?.rating}</span>
                     </div>
                   </div>
-                  <p className="text-gray-700 mb-2">{review.comment}</p>
-                  <p className="text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</p>
+                  <p className="text-gray-700 mb-2">{review?.comment}</p>
+                  <p className="text-sm text-gray-500">{new Date(review?.createdAt).toLocaleDateString()}</p>
                 </div>
               ))}
               

@@ -27,7 +27,7 @@ const BookCard = ({ id, title, author, cover, rating = 0, reviewCount = 0 }: Boo
         {rating > 0 && (
           <div className="flex items-center space-x-1">
             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm text-gray-700">{rating.toFixed(1)}</span>
+            <span className="text-sm text-gray-700">{rating}</span>
             <span className="text-sm text-gray-500">({reviewCount})</span>
           </div>
         )}
