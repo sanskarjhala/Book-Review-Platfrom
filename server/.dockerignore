@@ -1,0 +1,6 @@
+node_moudles
+.env
+dist
+sever/dist
+server/node_modules
+server/.env
